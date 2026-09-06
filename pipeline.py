@@ -13,9 +13,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 
 def build_preprocessor(num_cols, cat_cols):
-    """ColumnTransformer: numeric -> impute(median) + scale;
-    categorical -> impute(most_frequent) + one-hot. handle_unknown='ignore'
-    on the encoder so a category seen only at predict time doesn't crash."""
+
     numeric_pipe = Pipeline(steps=[
         ("impute", SimpleImputer(strategy="median")),
         ("scale", StandardScaler()),
@@ -53,19 +51,7 @@ def extract_title(name):
 
 
 def engineer(df):
-    """Add engineered features to a copy of df and return the copy.
 
-    - family_size = SibSp + Parch + 1 (self); is_alone = family_size == 1.
-      Hypothesis: solo travelers and very large families survived at
-      different rates than small families (small families could help each
-      other on the way to a boat; solo travelers had no one, and very large
-      families were slower to move together).
-    - title, extracted from Name.
-      Hypothesis: title carries social status and age/gender information
-      beyond what Pclass/Sex/Age capture alone (e.g. 'Master' flags young
-      boys, who were prioritized, even in the ~20% of rows where Age is
-      missing).
-    """
     df = df.copy()
     df["family_size"] = df["SibSp"] + df["Parch"] + 1
     df["is_alone"] = (df["family_size"] == 1).astype(int)
